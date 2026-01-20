@@ -1,6 +1,6 @@
 # Sprite Manager
 
-A self-hosted Next.js application for managing Sprites with authentication, terminal access, and checkpoint management.
+A self-hosted Next.js application for managing Sprites with mobile-friendly ui to create Sprites and run cli tools (Claude Code, Gemini CLI, CODEX CLI), and manage checkpoints.
 
 ## Features
 
