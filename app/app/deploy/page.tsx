@@ -254,13 +254,42 @@ export default function DeployPage() {
 
         {deployEvents.length > 0 && (
           <div className="mt-4 p-3 bg-zinc-50 dark:bg-zinc-900/40 border border-zinc-200 dark:border-zinc-800 rounded-lg">
-            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
+            <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200 mb-2">
               Deployment Progress
             </p>
-            <div className="mt-2 text-xs text-zinc-600 dark:text-zinc-400 space-y-1">
-              {deployEvents.map((event, idx) => (
-                <div key={`${event}-${idx}`}>{event}</div>
-              ))}
+            <div className="mt-2 space-y-1">
+              {deployEvents.map((event, idx) => {
+                const logEntry = deployLogs?.find((log) => log.step === event);
+                return (
+                  <details
+                    key={`${event}-${idx}`}
+                    className="rounded border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800"
+                  >
+                    <summary className="cursor-pointer px-2 py-1.5 text-xs text-zinc-700 dark:text-zinc-300 font-medium hover:bg-zinc-100 dark:hover:bg-zinc-700">
+                      {event}
+                    </summary>
+                    {logEntry && (logEntry.stdout || logEntry.stderr) && (
+                      <div className="p-2 space-y-2 border-t border-zinc-200 dark:border-zinc-700">
+                        {logEntry.stdout && (
+                          <pre className="whitespace-pre-wrap break-words text-xs bg-zinc-50 dark:bg-zinc-900 p-2 rounded">
+                            {logEntry.stdout}
+                          </pre>
+                        )}
+                        {logEntry.stderr && (
+                          <pre className="whitespace-pre-wrap break-words text-xs bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-2 rounded">
+                            {logEntry.stderr}
+                          </pre>
+                        )}
+                      </div>
+                    )}
+                    {!logEntry && (
+                      <div className="p-2 text-xs text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-700">
+                        No log data available for this step
+                      </div>
+                    )}
+                  </details>
+                );
+              })}
             </div>
           </div>
         )}
