@@ -18,9 +18,15 @@ export default async function AppLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <Link href="/app" className="text-xl font-semibold">
-              Sprite Manager
+              Sprite Hatchery
             </Link>
             <div className="flex items-center gap-4">
+              <Link
+                href="/app/deploy"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+              >
+                Deploy
+              </Link>
               <Link
                 href="/api/auth/signout"
                 className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"

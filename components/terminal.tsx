@@ -145,7 +145,26 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
 
-    const webLinksAddon = new WebLinksAddon();
+    const webLinksAddon = new WebLinksAddon((event, uri) => {
+      event.preventDefault();
+      const sanitized = uri.replace(/[\u0000-\u001F\u007F]/g, "").trim();
+      if (!sanitized) {
+        return;
+      }
+
+      let target = sanitized;
+      try {
+        new URL(target);
+      } catch {
+        if (target.startsWith("www.")) {
+          target = `https://${target}`;
+        } else {
+          return;
+        }
+      }
+
+      window.open(target, "_blank", "noopener,noreferrer");
+    });
     term.loadAddon(webLinksAddon);
 
     term.open(terminalRef.current);

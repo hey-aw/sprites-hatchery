@@ -33,7 +33,7 @@ export default function SignInPage() {
     <main className="container mx-auto flex grow flex-col items-center justify-center gap-3 self-center p-4 md:p-6">
       <div className="w-full max-w-md space-y-6 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-2">Sprite Manager</h1>
+          <h1 className="text-2xl font-bold mb-2">Sprite Hatchery</h1>
           <p className="text-zinc-600 dark:text-zinc-400 mb-4">
             Enter your Sprites API token to continue
           </p>
@@ -79,7 +79,7 @@ export default function SignInPage() {
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-600 dark:text-blue-400">
             <p className="font-medium mb-1">Privacy & Security</p>
             <p className="text-xs">
-              Your token is stored locally in your browser's localStorage and persists across sessions. 
+              Your token is stored locally in your browser localStorage and persists across sessions.
               It is only shared with the Sprites API server and is never stored in our database or shared with third parties.
             </p>
           </div>

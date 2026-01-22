@@ -1,4 +1,4 @@
-# Sprite Manager
+# Sprite Hatchery
 
 A self-hosted Next.js application for managing Sprites with mobile-friendly ui to create Sprites and run cli tools (Claude Code, Gemini CLI, CODEX CLI), and manage checkpoints.
 
@@ -59,6 +59,7 @@ pnpm dev:all
 ```
 
 This will start:
+
 - **Next.js dev server** on `http://localhost:3000`
 - **WebSocket proxy** on `ws://localhost:3001`
 
@@ -85,11 +86,13 @@ pnpm dev:proxy
 ### Troubleshooting
 
 **WebSocket proxy not connecting?**
+
 - Check that port 3001 is available: `lsof -i :3001`
 - Verify `WS_PROXY_PORT=3001` in `.env.local`
 - Check browser console for WebSocket errors
 
 **Token validation fails?**
+
 - Ensure your Sprites API token is valid
 - Token should start with `spr_` or similar
 - Get a fresh token from [sprites.dev/dashboard](https://sprites.dev/dashboard)
@@ -127,7 +130,7 @@ Anyone with a [Sprites.dev](https://sprites.dev) account can deploy their own in
 curl -X POST https://sprite-shell.sprites.app/api/deploy \
   -H "Content-Type: application/json" \
   -d '{
-    "sprite_name": "my-sprite-manager",
+    "sprite_name": "my-sprite-hatchery",
     "sprites_token": "YOUR_SPRITES_DEV_TOKEN"
   }'
 ```
@@ -177,7 +180,7 @@ Get your `sprites_token` from the [Sprites.dev dashboard](https://sprites.dev). 
    pnpm tsx server/ws-proxy.ts
    ```
 
-7. **Configure Sprite ports** - expose both ports in your Sprite config:
+6. **Configure Sprite ports** - expose both ports in your Sprite config:
    - Port 3000 → Next.js app (main traffic)
    - Port 3001 → WebSocket proxy (terminal connections)
 

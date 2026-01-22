@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sprite Manager",
-  description: "Manage your Sprites with ease",
+  title: "Sprite Hatchery",
+  description: "Manage your fly.ioSprites with ease",
 };
 
 export default function RootLayout({
