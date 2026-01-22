@@ -21,25 +21,6 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getTicket = async (cols: number, rows: number) => {
-    const response = await fetch("/api/console/ticket", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sprite_name: spriteName,
-        cols,
-        rows,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to get console ticket");
-    }
-
-    const data = await response.json();
-    return data.ticket;
-  };
-
   const connect = async () => {
     if (!terminalRef.current || !terminalInstanceRef.current) return;
 
@@ -52,15 +33,19 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
       const cols = term.cols;
       const rows = term.rows;
 
-      const ticket = await getTicket(cols, rows);
-      // Use wss:// for production, ws:// for localhost
+      // Get token from localStorage
+      const { getStoredToken } = await import("@/lib/auth/client");
+      const token = getStoredToken();
+      
+      if (!token) {
+        throw new Error("Not authenticated - please sign in");
+      }
+
+      // Connect via our proxy endpoint with token
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.hostname;
-      // In production (Sprites), the WebSocket relay is on the same host but different port
-      // In development, use localhost:3001
-      const isProduction = host !== "localhost" && host !== "127.0.0.1";
-      const port = isProduction ? "3001" : (process.env.NEXT_PUBLIC_WS_RELAY_PORT || "3001");
-      const wsUrl = `${protocol}//${host}:${port}/ws/console?ticket=${encodeURIComponent(ticket)}`;
+      const port = process.env.NEXT_PUBLIC_WS_PROXY_PORT || "3001";
+      const wsUrl = `${protocol}//${host}:${port}?sprite=${encodeURIComponent(spriteName)}&cols=${cols}&rows=${rows}&token=${encodeURIComponent(token)}`;
       const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {

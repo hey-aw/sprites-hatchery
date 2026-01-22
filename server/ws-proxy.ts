@@ -1,46 +1,36 @@
 import { WebSocketServer, WebSocket } from "ws";
-import { verifyTicket } from "../lib/ticket";
+import { parse } from "url";
 
-const PORT = parseInt(process.env.WS_RELAY_PORT || "3001", 10);
-const SETUP_SPRITE_TOKEN = process.env.SETUP_SPRITE_TOKEN;
+const PORT = parseInt(process.env.WS_PROXY_PORT || "3001", 10);
 const SPRITES_WS_BASE = "wss://api.sprites.dev/v1";
-
-if (!SETUP_SPRITE_TOKEN) {
-  console.error("SETUP_SPRITE_TOKEN environment variable is required");
-  process.exit(1);
-}
 
 const wss = new WebSocketServer({ port: PORT });
 
-console.log(`WebSocket relay server listening on port ${PORT}`);
+console.log(`WebSocket proxy server listening on port ${PORT}`);
 
 wss.on("connection", async (clientWs: WebSocket, req) => {
-  const url = new URL(req.url || "", `http://localhost:${PORT}`);
-  const ticketParam = url.searchParams.get("ticket");
+  const url = parse(req.url || "", true);
+  const spriteName = url.query?.sprite as string;
+  const cols = parseInt(url.query?.cols as string || "80", 10);
+  const rows = parseInt(url.query?.rows as string || "24", 10);
+  const token = url.query?.token as string;
 
-  if (!ticketParam) {
-    clientWs.close(1008, "Missing ticket parameter");
+  if (!spriteName) {
+    clientWs.close(1008, "Missing sprite parameter");
     return;
   }
 
-  let ticket;
-  try {
-    ticket = await verifyTicket(ticketParam);
-  } catch (error) {
-    clientWs.close(1008, "Invalid ticket");
+  if (!token) {
+    clientWs.close(1008, "Missing token");
     return;
   }
-
-  const { spriteName, sessionId, cols, rows } = ticket;
 
   // Connect to Sprites exec WebSocket
-  const spritesUrl = sessionId
-    ? `${SPRITES_WS_BASE}/sprites/${spriteName}/exec/${sessionId}`
-    : `${SPRITES_WS_BASE}/sprites/${spriteName}/exec?cmd=/bin/bash&tty=true&cols=${cols}&rows=${rows}`;
-
+  const spritesUrl = `${SPRITES_WS_BASE}/sprites/${spriteName}/exec?cmd=/bin/bash&tty=true&cols=${cols}&rows=${rows}`;
+  
   const spritesWs = new WebSocket(spritesUrl, {
     headers: {
-      Authorization: `Bearer ${SETUP_SPRITE_TOKEN}`,
+      Authorization: `Bearer ${token}`,
     },
   });
 

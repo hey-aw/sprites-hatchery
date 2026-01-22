@@ -24,12 +24,19 @@ export class SpritesClient {
   private token: string;
   private org: string;
 
-  constructor() {
-    if (!process.env.SETUP_SPRITE_TOKEN) {
-      throw new Error("SETUP_SPRITE_TOKEN environment variable is not set");
+  constructor(token?: string, org?: string) {
+    // If token is provided, use it; otherwise try to get from session
+    if (token) {
+      this.token = token;
+      this.org = org || "";
+    } else {
+      // Fallback to env var for backward compatibility (e.g., deploy route)
+      if (!process.env.SETUP_SPRITE_TOKEN) {
+        throw new Error("Token must be provided or SETUP_SPRITE_TOKEN must be set");
+      }
+      this.token = process.env.SETUP_SPRITE_TOKEN;
+      this.org = process.env.SPRITES_ORG || "";
     }
-    this.token = process.env.SETUP_SPRITE_TOKEN;
-    this.org = process.env.SPRITES_ORG || "";
   }
 
   private async request<T>(
@@ -196,11 +203,54 @@ export class SpritesClient {
   }
 }
 
-let _spritesClient: SpritesClient | null = null;
-
-export function getSpritesClient(): SpritesClient {
-  if (!_spritesClient) {
-    _spritesClient = new SpritesClient();
+/**
+ * Get a SpritesClient instance using the token from the request
+ * This should be used in API routes where we have access to the request
+ */
+export async function getSpritesClient(request: { headers: { get: (name: string) => string | null } }): Promise<SpritesClient> {
+  // Extract token from request headers
+  const authHeader = request.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    throw new Error("Not authenticated - missing token in Authorization header");
   }
-  return _spritesClient;
+  
+  const token = authHeader.substring(7);
+  
+  // Get org by validating token
+  const { validateToken } = await import("./auth/token-auth");
+  const validation = await validateToken(token);
+  if (!validation.valid) {
+    throw new Error("Invalid token");
+  }
+  
+  return new SpritesClient(token, validation.org || "");
+}
+
+/**
+ * Get a SpritesClient for server components
+ * Server components should use API routes instead, but this helper can be used
+ * if you have the token available (e.g., from a cookie or env var)
+ */
+export async function getSpritesClientForServer(token?: string): Promise<SpritesClient | null> {
+  if (!token) {
+    // Try to get from session - but session doesn't have full token
+    // Server components should use API routes instead
+    return null;
+  }
+  
+  const { validateToken } = await import("./auth/token-auth");
+  const validation = await validateToken(token);
+  if (!validation.valid) {
+    return null;
+  }
+  
+  return new SpritesClient(token, validation.org || "");
+}
+
+/**
+ * Get a SpritesClient instance using a provided token
+ * Useful for external operations or when token is already available
+ */
+export function createSpritesClient(token: string, org?: string): SpritesClient {
+  return new SpritesClient(token, org);
 }

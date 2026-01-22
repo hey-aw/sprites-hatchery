@@ -4,17 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:relay": "tsx watch --env-file=.env.local server/ws-relay.ts",
-    "dev:all": "concurrently \"pnpm dev\" \"pnpm dev:relay\"",
+    "dev:proxy": "tsx watch --env-file=.env.local server/ws-proxy.ts",
+    "dev:all": "concurrently \"pnpm dev\" \"pnpm dev:proxy\"",
     "build": "next build",
     "start": "next start",
-    "start:relay": "tsx --env-file=.env.local server/ws-relay.ts",
-    "start:all": "concurrently \"pnpm start\" \"pnpm start:relay\"",
+    "start:proxy": "tsx --env-file=.env.local server/ws-proxy.ts",
+    "start:all": "concurrently \"pnpm start\" \"pnpm start:proxy\"",
     "lint": "eslint"
   },
   "dependencies": {
-    "@neondatabase/neon-js": "0.1.0-beta.22",
-    "@neondatabase/serverless": "^1.0.2",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/addon-web-links": "^0.12.0",
     "@xterm/xterm": "^6.0.0",

@@ -12,69 +12,15 @@ export function SpritesList({ org }: { org: string }) {
   const [error, setError] = useState<string | null>(null);
   
   // Deploy form state
-  const [deploySpriteName, setDeploySpriteName] = useState("");
+  const [deploySpriteName, setDeploySpriteName] = useState("sprite-manager");
   const [deployUrlAuth, setDeployUrlAuth] = useState<"sprite" | "public">("sprite");
+  const [deployUseExisting, setDeployUseExisting] = useState(false);
   const [deployLoading, setDeployLoading] = useState(false);
   const [deployError, setDeployError] = useState<string | null>(null);
   const [deploySuccess, setDeploySuccess] = useState<{
     sprite: { name: string; url: string; status: string };
     next_steps: string[];
   } | null>(null);
-
-  useEffect(() => {
-    async function fetchSprites() {
-      const token = getStoredToken();
-      if (!token) {
-        // Check if there's a valid session via API
-        try {
-          const userResponse = await fetch("/api/auth/user");
-          if (userResponse.ok) {
-            // User has a session but no token in localStorage - redirect to sign-in
-            router.push("/auth/sign-in");
-            return;
-          }
-        } catch {
-          // API call failed, continue to redirect
-        }
-        // No session either - redirect to sign-in
-        router.push("/auth/sign-in");
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/sprites", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            // Token is invalid, redirect to sign-in
-            router.push("/auth/sign-in");
-            return;
-          }
-          throw new Error("Failed to load sprites");
-        }
-
-        const data = await response.json();
-        const spritesData = Array.isArray(data) ? data : data?.sprites;
-        if (!Array.isArray(spritesData)) {
-          throw new Error("Invalid sprites payload");
-        }
-        setSprites(spritesData);
-        setLoading(false);
-      } catch (err) {
-        // Only set error if we're not redirecting
-        if (err instanceof Error && !err.message.includes("redirect")) {
-          setError(err.message);
-        }
-        setLoading(false);
-      }
-    }
-
-    fetchSprites();
-  }, [router]);
 
   const fetchSprites = async () => {
     const token = getStoredToken();
@@ -162,6 +108,7 @@ export function SpritesList({ org }: { org: string }) {
           sprite_name: deploySpriteName,
           sprites_token: token,
           url_auth: deployUrlAuth,
+          use_existing: deployUseExisting,
         }),
       });
 
@@ -235,22 +182,54 @@ export function SpritesList({ org }: { org: string }) {
                 Lowercase letters, numbers, and hyphens only
               </p>
             </div>
-            <div className="sm:w-48">
-              <label htmlFor="url-auth" className="block text-sm font-medium mb-2">
-                URL Auth
+            <div className="flex items-end gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                  Access:
+                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="url-auth"
+                      value="sprite"
+                      checked={deployUrlAuth === "sprite"}
+                      onChange={(e) => setDeployUrlAuth(e.target.value as "sprite" | "public")}
+                      disabled={deployLoading || deployUseExisting}
+                      className="w-4 h-4 text-blue-600 border-zinc-300 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                      Private
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="url-auth"
+                      value="public"
+                      checked={deployUrlAuth === "public"}
+                      onChange={(e) => setDeployUrlAuth(e.target.value as "sprite" | "public")}
+                      disabled={deployLoading || deployUseExisting}
+                      className="w-4 h-4 text-blue-600 border-zinc-300 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                      Public (BYO Key)
+                    </span>
+                  </label>
+                </div>
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={deployUseExisting}
+                  onChange={(e) => setDeployUseExisting(e.target.checked)}
+                  disabled={deployLoading}
+                  className="w-4 h-4 text-blue-600 border-zinc-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-sm text-zinc-700 dark:text-zinc-300">
+                  Use existing sprite
+                </span>
               </label>
-              <select
-                id="url-auth"
-                value={deployUrlAuth}
-                onChange={(e) => setDeployUrlAuth(e.target.value as "sprite" | "public")}
-                className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                disabled={deployLoading}
-              >
-                <option value="sprite">Sprite</option>
-                <option value="public">Public</option>
-              </select>
-            </div>
-            <div className="flex items-end">
               <button
                 type="submit"
                 disabled={deployLoading || !deploySpriteName}
@@ -260,6 +239,11 @@ export function SpritesList({ org }: { org: string }) {
               </button>
             </div>
           </div>
+          {deployUseExisting && (
+            <p className="text-xs text-zinc-500">
+              Access settings are unchanged for existing sprites.
+            </p>
+          )}
         </form>
 
         {deployError && (

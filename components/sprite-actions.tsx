@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getStoredToken } from "@/lib/auth/client";
 
 interface SpriteActionsProps {
   spriteName: string;
@@ -35,9 +36,17 @@ export function SpriteActions({ spriteName, checkpoints }: SpriteActionsProps) {
           return;
       }
 
+      const token = getStoredToken();
+      if (!token) {
+        throw new Error("Not authenticated");
+      }
+
       const response = await fetch(endpoint, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: data ? JSON.stringify(data) : undefined,
       });
 

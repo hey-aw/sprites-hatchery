@@ -1,36 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { neonAuth } from "@neondatabase/neon-js/auth/next/server";
-import { sql } from "@/lib/db";
+import { getAuthUser } from "@/lib/auth/server";
 import { getSpritesClient } from "@/lib/sprites-client";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ name: string }> }
 ) {
-  const { user } = await neonAuth();
+  const user = await getAuthUser(request);
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { name } = await params;
-
-  // Verify ownership
-  const [sprite] = await sql`
-    SELECT s.*, p.repo_url, p.default_branch
-    FROM sprites s
-    JOIN projects p ON s.project_id = p.id
-    WHERE s.sprite_name = ${name} AND p.owner_user_id = ${user.id}
-  `;
-
-  if (!sprite) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
   const body = await request.json();
-  const { clone_repo } = body;
+  const { clone_repo, repo_url } = body;
 
   try {
-    const client = getSpritesClient();
+    const client = await getSpritesClient(request);
     // Install common dev tools
     await client.execCommand(name, ["apt-get", "update"]);
     await client.execCommand(name, [
@@ -43,11 +29,11 @@ export async function POST(
     ]);
 
     // Clone repo if provided
-    if (clone_repo && sprite.repo_url) {
+    if (clone_repo && repo_url) {
       await client.execCommand(name, [
         "git",
         "clone",
-        sprite.repo_url,
+        repo_url,
         ".",
       ], {
         dir: "/home",
@@ -56,6 +42,9 @@ export async function POST(
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof Error && error.message.includes("404")) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Init failed" },
       { status: 500 }

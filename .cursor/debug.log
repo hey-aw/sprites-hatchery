@@ -1,0 +1,79 @@
+{"location":"sign-in/page.tsx:handleSubmit","message":"handleSubmit entry","data":{"tokenLen":543,"tokenTrimmedLen":543},"timestamp":1769045889682,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/client.ts:submitToken","message":"fetch /api/auth/token","data":{"tokenLen":543},"timestamp":1769045889682,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"api/auth/token/route.ts:POST","message":"token API received","data":{"hasToken":true,"tokenType":"string","tokenLen":543},"timestamp":1769045889754,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":false,"status":401},"timestamp":1769045889840,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/client.ts:submitToken","message":"token API response","data":{"ok":false,"status":401,"hasOrg":false,"hasError":true},"timestamp":1769045889845,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"sign-in/page.tsx:after submitToken","message":"submitToken result","data":{"success":false,"hasError":true,"errorLen":13},"timestamp":1769045889845,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API error body length","data":{"status":401,"errorLen":33},"timestamp":1769045889841,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"api/auth/token/route.ts:POST","message":"validateToken result","data":{"valid":false,"hasError":true,"hasOrg":false},"timestamp":1769045889842,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"sign-in/page.tsx:handleSubmit","message":"handleSubmit entry","data":{"tokenLen":120,"tokenTrimmedLen":120},"timestamp":1769045946024,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/client.ts:submitToken","message":"fetch /api/auth/token","data":{"tokenLen":120},"timestamp":1769045946024,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"api/auth/token/route.ts:POST","message":"token API received","data":{"hasToken":true,"tokenType":"string","tokenLen":120},"timestamp":1769045946057,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045946981,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045946986,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"api/auth/token/route.ts:POST","message":"validateToken result","data":{"valid":true,"hasError":false,"hasOrg":false},"timestamp":1769045946988,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"api/auth/token/route.ts:POST","message":"returning 200 success","data":{"hasOrg":false},"timestamp":1769045946996,"sessionId":"debug-session","hypothesisId":"H5"}
+{"location":"lib/auth/client.ts:submitToken","message":"token API response","data":{"ok":true,"status":200,"success":true,"hasOrg":false,"hasError":false},"timestamp":1769045947000,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"lib/auth/client.ts:storeToken","message":"stored token and org","data":{"tokenLen":120,"orgLen":0},"timestamp":1769045947000,"sessionId":"debug-session","hypothesisId":"H6"}
+{"location":"sign-in/page.tsx:after submitToken","message":"submitToken result","data":{"success":true,"hasError":false,"errorLen":0},"timestamp":1769045947000,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"sign-in/page.tsx:before router.push","message":"calling router.push(/app)","data":{},"timestamp":1769045947000,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"session cookie presence","data":{"hasCookie":true,"cookieLen":163},"timestamp":1769045947012,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"jwtVerify success","data":{"hasUserId":true,"hasOrg":false},"timestamp":1769045947014,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"session cookie presence","data":{"hasCookie":true,"cookieLen":163},"timestamp":1769045947126,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"session cookie presence","data":{"hasCookie":true,"cookieLen":163},"timestamp":1769045947129,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"jwtVerify success","data":{"hasUserId":true,"hasOrg":false},"timestamp":1769045947137,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"app/app/layout.tsx","message":"app layout auth check","data":{"hasUser":true,"hasOrg":false},"timestamp":1769045947141,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"jwtVerify success","data":{"hasUserId":true,"hasOrg":false},"timestamp":1769045947145,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"app/app/sprites-list.tsx:fetchSprites","message":"token presence in sprites list","data":{"hasToken":true,"tokenLen":120},"timestamp":1769045947464,"sessionId":"debug-session","hypothesisId":"H6"}
+{"location":"app/app/sprites-list.tsx:fetchSprites","message":"token presence in sprites list","data":{"hasToken":true,"tokenLen":120},"timestamp":1769045947464,"sessionId":"debug-session","hypothesisId":"H6"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045947512,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045947513,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045947593,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045947596,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045947626,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045947627,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"app/app/sprites-list.tsx:fetchSprites","message":"sprites API response status","data":{"ok":true,"status":200},"timestamp":1769045947661,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"app/app/sprites-list.tsx:fetchSprites","message":"sprites API payload shape","data":{"isArray":false,"dataType":"object","keys":["sprites","next_continuation_token","has_more"]},"timestamp":1769045947661,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045947783,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045947785,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045947826,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045947827,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045947858,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045947859,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"app/app/sprites-list.tsx:fetchSprites","message":"sprites API response status","data":{"ok":true,"status":200},"timestamp":1769045947899,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"app/app/sprites-list.tsx:fetchSprites","message":"sprites API payload shape","data":{"isArray":false,"dataType":"object","keys":["sprites","next_continuation_token","has_more"]},"timestamp":1769045947900,"sessionId":"debug-session","hypothesisId":"H2"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"session cookie presence","data":{"hasCookie":true,"cookieLen":163},"timestamp":1769045985348,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"jwtVerify success","data":{"hasUserId":true,"hasOrg":false},"timestamp":1769045985351,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"session cookie presence","data":{"hasCookie":true,"cookieLen":163},"timestamp":1769045986142,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"jwtVerify success","data":{"hasUserId":true,"hasOrg":false},"timestamp":1769045986145,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045986314,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045986315,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045986858,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045986860,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045986891,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045986892,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045986962,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045986963,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045987000,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045987001,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045987017,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045987018,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045987034,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045987037,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045987583,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045987586,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045987622,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045987623,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045990495,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045990496,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045990536,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045990537,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites API status","data":{"ok":true,"status":200},"timestamp":1769045990568,"sessionId":"debug-session","hypothesisId":"H1"}
+{"location":"lib/auth/token-auth.ts:validateToken","message":"sprites payload shape","data":{"isArray":false,"length":0},"timestamp":1769045990568,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"session cookie presence","data":{"hasCookie":true,"cookieLen":163},"timestamp":1769045994570,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"jwtVerify success","data":{"hasUserId":true,"hasOrg":false},"timestamp":1769045994572,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"session cookie presence","data":{"hasCookie":true,"cookieLen":163},"timestamp":1769045994907,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"lib/auth/server.ts:getAuthUserFromSession","message":"jwtVerify success","data":{"hasUserId":true,"hasOrg":false},"timestamp":1769045994909,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"app/app/layout.tsx","message":"app layout auth check","data":{"hasUser":true,"hasOrg":false},"timestamp":1769046142822,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"app/app/layout.tsx","message":"app layout auth check","data":{"hasUser":true,"hasOrg":false},"timestamp":1769046142921,"sessionId":"debug-session","hypothesisId":"H3"}
+{"location":"app/app/layout.tsx","message":"app layout auth check","data":{"hasUser":true,"hasOrg":false},"timestamp":1769046143034,"sessionId":"debug-session","hypothesisId":"H3"}
