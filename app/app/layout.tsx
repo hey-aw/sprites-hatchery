@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { neonAuth } from "@neondatabase/neon-js/auth/next/server";
+import { getAuthUserFromHeaders } from "@/lib/auth/server";
 import Link from "next/link";
 
 export default async function AppLayout({
@@ -7,7 +7,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await neonAuth();
+  const user = await getAuthUserFromHeaders();
   if (!user) {
     redirect("/auth/sign-in");
   }
@@ -21,11 +21,8 @@ export default async function AppLayout({
               Sprite Manager
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-zinc-600 dark:text-zinc-400">
-                {user.name || user.email}
-              </span>
               <Link
-                href="/account/sign-out"
+                href="/api/auth/signout"
                 className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
               >
                 Sign Out
