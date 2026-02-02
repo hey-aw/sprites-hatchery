@@ -13,8 +13,10 @@ export default async function TerminalPage({
 
   const { name } = await params;
 
+  // Use fixed positioning to escape the layout and fill the viewport
+  // The Terminal component handles visual viewport tracking for soft keyboard
   return (
-    <div className="h-screen">
+    <div className="fixed inset-0 z-50 overflow-hidden">
       <Terminal spriteName={name} />
     </div>
   );

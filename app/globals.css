@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Ensure xterm fills its container */
+.xterm {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.xterm-viewport {
+  width: 100% !important;
+}
+
+.xterm-screen {
+  width: 100% !important;
+}
+
+/* Disable iOS keyboard suggestions on xterm hidden textarea */
+.xterm-helper-textarea {
+  -webkit-user-select: none;
+  user-select: none;
+}
