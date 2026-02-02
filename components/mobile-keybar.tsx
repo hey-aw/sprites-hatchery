@@ -45,11 +45,10 @@ export function MobileKeyBar({ onKeyPress }: MobileKeyBarProps) {
           <button
             key={idx}
             onClick={() => handleKeyClick(key)}
-            className={`px-3 py-2 rounded text-sm font-mono ${
-              key.modifier && modifiers[key.key]
-                ? "bg-blue-600 text-white"
-                : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
-            }`}
+            className={`px-3 py-2 rounded text-sm font-mono ${key.modifier && modifiers[key.key]
+              ? "bg-blue-600 text-white"
+              : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+              }`}
           >
             {key.label}
           </button>
