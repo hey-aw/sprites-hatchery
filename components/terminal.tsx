@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Terminal as XTerm } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
@@ -12,34 +13,41 @@ interface TerminalProps {
   onClose?: () => void;
 }
 
-// Hook to track visual viewport height (accounts for soft keyboard)
-function useVisualViewportHeight() {
-  const [height, setHeight] = useState<number | null>(null);
+// Hook to track visual viewport (accounts for soft keyboard)
+function useVisualViewport() {
+  const [viewport, setViewport] = useState<{ height: number; offsetTop: number } | null>(null);
 
   useEffect(() => {
-    // Initialize with window height, will update when visualViewport is available
-    setHeight(window.visualViewport?.height ?? window.innerHeight);
+    const vv = window.visualViewport;
+    // Initialize with current values
+    setViewport({
+      height: vv?.height ?? window.innerHeight,
+      offsetTop: vv?.offsetTop ?? 0,
+    });
 
-    const viewport = window.visualViewport;
-    if (!viewport) return;
+    if (!vv) return;
 
-    const updateHeight = () => {
-      setHeight(viewport.height);
+    const update = () => {
+      setViewport({
+        height: vv.height,
+        offsetTop: vv.offsetTop,
+      });
     };
 
-    viewport.addEventListener("resize", updateHeight);
-    viewport.addEventListener("scroll", updateHeight);
+    vv.addEventListener("resize", update);
+    vv.addEventListener("scroll", update);
 
     return () => {
-      viewport.removeEventListener("resize", updateHeight);
-      viewport.removeEventListener("scroll", updateHeight);
+      vv.removeEventListener("resize", update);
+      vv.removeEventListener("scroll", update);
     };
   }, []);
 
-  return height;
+  return viewport;
 }
 
 export function Terminal({ spriteName, onClose }: TerminalProps) {
+  const router = useRouter();
   const terminalRef = useRef<HTMLDivElement>(null);
   const terminalInstanceRef = useRef<XTerm | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
@@ -49,7 +57,7 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
   const [error, setError] = useState<string | null>(null);
   const [showPasteFallback, setShowPasteFallback] = useState(false);
   const pasteFallbackRef = useRef<HTMLTextAreaElement | null>(null);
-  const viewportHeight = useVisualViewportHeight();
+  const visualViewport = useVisualViewport();
 
   const connect = async () => {
     if (!terminalRef.current || !terminalInstanceRef.current) return;
@@ -205,27 +213,30 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
     terminalInstanceRef.current = term;
     fitAddonRef.current = fitAddon;
 
-    // Initial fit
-    fitAddon.fit();
-
-    // Connect
-    connect();
-
-    // Handle resize
+    // Handle resize - always fit, optionally send to server if connected
     const handleResize = () => {
-      if (fitAddon && term && wsRef.current?.readyState === WebSocket.OPEN) {
+      if (fitAddon && term) {
         fitAddon.fit();
         const cols = term.cols;
         const rows = term.rows;
-        wsRef.current.send(
-          JSON.stringify({
-            type: "resize",
-            cols,
-            rows,
-          })
-        );
+        if (wsRef.current?.readyState === WebSocket.OPEN && cols > 0 && rows > 0) {
+          wsRef.current.send(
+            JSON.stringify({
+              type: "resize",
+              cols,
+              rows,
+            })
+          );
+        }
       }
     };
+
+    // Initial fit with delay to let layout settle
+    const initialFitTimeout = setTimeout(() => {
+      fitAddon.fit();
+      // Connect after initial fit
+      connect();
+    }, 100);
 
     window.addEventListener("resize", handleResize);
     const resizeObserver = new ResizeObserver(handleResize);
@@ -234,6 +245,7 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
     }
 
     return () => {
+      clearTimeout(initialFitTimeout);
       window.removeEventListener("resize", handleResize);
       resizeObserver.disconnect();
       if (reconnectTimeoutRef.current) {
@@ -309,7 +321,7 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
 
   // Refit terminal when viewport height changes (soft keyboard appears/disappears)
   useEffect(() => {
-    if (viewportHeight === null) return;
+    if (visualViewport === null) return;
     
     const fitAddon = fitAddonRef.current;
     const term = terminalInstanceRef.current;
@@ -329,17 +341,34 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
       }, 50);
       return () => clearTimeout(timeout);
     }
-  }, [viewportHeight]);
+  }, [visualViewport]);
 
-  // Use viewport height if available, otherwise fall back to 100%
-  const containerStyle = viewportHeight !== null
-    ? { height: `${viewportHeight}px` }
+  // Position container at the top of the visible viewport with correct height
+  // offsetTop handles when the browser scrolls due to keyboard appearing
+  const containerStyle: React.CSSProperties = visualViewport !== null
+    ? { 
+        position: 'fixed',
+        top: `${visualViewport.offsetTop}px`,
+        left: 0,
+        right: 0,
+        height: `${visualViewport.height}px`,
+      }
     : { height: '100%' };
 
   return (
     <div className="flex flex-col bg-black overflow-hidden" style={containerStyle}>
       <div className="flex-shrink-0 flex items-center justify-between p-2 bg-zinc-900 border-b border-zinc-700">
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => router.push(`/app/sprites/${spriteName}`)}
+            className="p-1 text-zinc-400 hover:text-zinc-200 rounded"
+            aria-label="Back to sprite"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          </button>
           <div
             className={`w-2 h-2 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"
               }`}
@@ -401,7 +430,8 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
       )}
       <div
         ref={terminalRef}
-        className="flex-1 min-h-0 overflow-hidden"
+        className="flex-1 min-h-0 w-full overflow-hidden"
+        style={{ position: 'relative' }}
       />
       <MobileKeyBar onKeyPress={handleKeyPress} onPaste={handlePaste} />
     </div>

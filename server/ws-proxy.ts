@@ -28,11 +28,22 @@ wss.on("connection", async (clientWs: WebSocket, req) => {
   // Connect to Sprites exec WebSocket
   const spritesUrl = `${SPRITES_WS_BASE}/sprites/${spriteName}/exec?cmd=/bin/bash&tty=true&cols=${cols}&rows=${rows}`;
   
+  let intentionalClose = false;
+
   const spritesWs = new WebSocket(spritesUrl, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+
+  const closeSpritesWs = () => {
+    intentionalClose = true;
+    if (spritesWs.readyState === WebSocket.OPEN) {
+      spritesWs.close();
+    } else if (spritesWs.readyState === WebSocket.CONNECTING) {
+      spritesWs.terminate();
+    }
+  };
 
   spritesWs.on("open", () => {
     console.log(`Connected to Sprites exec for ${spriteName}`);
@@ -46,7 +57,10 @@ wss.on("connection", async (clientWs: WebSocket, req) => {
   });
 
   spritesWs.on("error", (error) => {
-    console.error("Sprites WebSocket error:", error);
+    // Don't log errors from intentional client disconnection
+    if (!intentionalClose) {
+      console.error("Sprites WebSocket error:", error);
+    }
     if (clientWs.readyState === WebSocket.OPEN) {
       clientWs.close(1011, "Sprites connection error");
     }
@@ -81,10 +95,10 @@ wss.on("connection", async (clientWs: WebSocket, req) => {
 
   clientWs.on("error", (error) => {
     console.error("Client WebSocket error:", error);
-    spritesWs.close();
+    closeSpritesWs();
   });
 
   clientWs.on("close", () => {
-    spritesWs.close();
+    closeSpritesWs();
   });
 });
