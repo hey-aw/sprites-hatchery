@@ -1,9 +1,11 @@
 # Sprite Hatchery
 
-A self-hosted Next.js application for managing Sprites with mobile-friendly ui to create Sprites and run cli tools (Claude Code, Gemini CLI, CODEX CLI), and manage checkpoints.
+A self-hosted Next.js application focused on launching coding explorations from an iPhone. It helps you create a Sprite, initialize an environment even when no repository exists yet, and connect with CLI coding agents from mobile or desktop terminal apps.
 
 ## Features
 
+- **iPhone-first launch flow**: Quickly bootstrap a fresh coding environment while on the go
+- **Zero-repo explorations**: Create and initialize Sprites even when starting from scratch
 - **Authentication**: Bring Your Own Key (BYO Key) - users enter their Sprites API token directly
 - **Project Management**: Create and manage projects with repository URLs
 - **Sprite Management**: Create, initialize, and manage Sprites via Sprites API
@@ -117,6 +119,12 @@ pnpm tsx server/ws-proxy.ts
 - **BYO Key Auth**: Users enter their Sprites API token directly - no OAuth setup needed
 - **Sprites API**: Creates and manages Sprites, checkpoints, and exec sessions - all data stored in Sprites
 - **Organization-based**: Sprites are organized by organization (from your Sprites API token)
+
+## Product Direction
+
+The primary purpose is to make coding explorations possible from a phone, especially iPhone workflows with terminal apps and CLI coding agents.
+
+The execution plan is documented in [`docs/PRODUCT_PLAN.md`](docs/PRODUCT_PLAN.md).
 
 ## Deploy to a Sprite
 
