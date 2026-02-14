@@ -16,7 +16,7 @@ A self-hosted Next.js application for managing Sprites with mobile-friendly ui t
 ### Prerequisites
 
 1. A Sprites.dev account
-2. A Sprites API token (get it from [sprites.dev/dashboard](https://sprites.dev/dashboard))
+2. A Sprites API token (get it from [sprites.dev/account](https://sprites.dev/account))
 
 ### Environment Variables
 
@@ -40,7 +40,7 @@ WS_PROXY_PORT=3001
 
 ### Prerequisites
 
-1. **Sprites API Token**: Get from [sprites.dev/dashboard](https://sprites.dev/dashboard)
+1. **Sprites API Token**: Get from [sprites.dev/account](https://sprites.dev/account)
 
 ### Quick Start
 
@@ -78,7 +78,7 @@ pnpm dev:proxy
 ### Testing the App
 
 1. **Open the app**: Visit `http://localhost:3000`
-2. **Sign in**: Enter your Sprites API token (from [sprites.dev/dashboard](https://sprites.dev/dashboard))
+2. **Sign in**: Enter your Sprites API token (from [sprites.dev/account](https://sprites.dev/account))
 3. **Create a project**: Click "New Project" and add a project
 4. **Create a sprite**: Add a sprite to your project
 5. **Open terminal**: Click on a sprite to open the in-browser terminal
@@ -95,7 +95,7 @@ pnpm dev:proxy
 
 - Ensure your Sprites API token is valid
 - Token should start with `spr_` or similar
-- Get a fresh token from [sprites.dev/dashboard](https://sprites.dev/dashboard)
+- Get a fresh token from [sprites.dev/account](https://sprites.dev/account)
 
 ## Production
 
@@ -144,7 +144,7 @@ This will:
 
 **No external dependencies needed!** All data is stored in Sprites, and users authenticate by entering their Sprites API token.
 
-Get your `sprites_token` from the [Sprites.dev dashboard](https://sprites.dev). View API docs at `GET /api/deploy`.
+Get your `sprites_token` from the [Sprites.dev account](https://sprites.dev). View API docs at `GET /api/deploy`.
 
 ### Manual Deploy
 
@@ -197,7 +197,7 @@ Get your `sprites_token` from the [Sprites.dev dashboard](https://sprites.dev). 
 
 Users sign in by entering their Sprites API token:
 
-1. Get your token from the [Sprites.dev dashboard](https://sprites.dev/dashboard)
+1. Get your token from the [Sprites.dev account](https://sprites.dev/account)
 2. Visit the app and enter your token on the sign-in page
 3. The token is validated and stored in a session cookie
 4. All Sprites API calls use your token automatically

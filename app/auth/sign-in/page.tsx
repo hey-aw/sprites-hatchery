@@ -40,12 +40,12 @@ export default function SignInPage() {
           <p className="text-sm text-zinc-500 dark:text-zinc-500">
             Get your token from the{" "}
             <a
-              href="https://sprites.dev/dashboard"
+              href="https://sprites.dev/account"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:underline"
             >
-              Sprites.dev dashboard
+              Sprites.dev account
             </a>
           </p>
         </div>
