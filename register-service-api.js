@@ -37,7 +37,7 @@ const spriteName = process.argv[3] || "sprites-hatchery";
 
 if (!token) {
   console.error("Usage: node register-service-api.js <SPRITES_TOKEN> [SPRITE_NAME]");
-  console.error("Get your token from: https://sprites.dev/dashboard");
+  console.error("Get your token from: https://sprites.dev/account");
   process.exit(1);
 }
 

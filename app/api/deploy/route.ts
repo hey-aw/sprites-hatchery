@@ -663,7 +663,7 @@ echo "Services started. PIDs: $(cat /tmp/nextjs.pid) and $(cat /tmp/ws-proxy.pid
       next_steps: [
         "Sprite Hatchery is now running and hosting at the sprite URL",
         "Users can sign in by entering their Sprites API token",
-        "Get your token from https://sprites.dev/dashboard",
+        "Get your token from https://sprites.dev/account",
         "To restart services, run: /home/sprite/start.sh",
         "Check logs: /tmp/nextjs.log and /tmp/ws-proxy.log",
         "Create a checkpoint for quick restores",
@@ -713,7 +713,7 @@ echo "Services started. PIDs: $(cat /tmp/nextjs.pid) and $(cat /tmp/ws-proxy.pid
     if (errorMessage.includes("unauthorized") || errorMessage.includes("401")) {
       return NextResponse.json(
         {
-          error: "Unauthorized: Your Sprites API token is invalid or expired. Please check your token at https://sprites.dev/dashboard",
+          error: "Unauthorized: Your Sprites API token is invalid or expired. Please check your token at https://sprites.dev/account",
           logs,
         },
         { status: 401 }
@@ -747,7 +747,7 @@ export async function GET() {
       sprites_token: {
         type: "string",
         required: true,
-        description: "Your Sprites.dev organization token (from sprites.dev dashboard)",
+        description: "Your Sprites.dev organization token (from sprites.dev account)",
       },
       url_auth: {
         type: "string",
