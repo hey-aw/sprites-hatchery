@@ -1,31 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getStoredToken } from "@/lib/auth/client";
 
+interface SpriteSummary {
+  name: string;
+  status: string;
+  url?: string;
+}
+
 export function SpritesList({ org }: { org: string }) {
   const router = useRouter();
-  const [sprites, setSprites] = useState<any[]>([]);
+  const [sprites, setSprites] = useState<SpriteSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSprites = async () => {
+  const fetchSprites = useCallback(async () => {
     const token = getStoredToken();
     if (!token) {
-      // Check if there's a valid session via API
       try {
         const userResponse = await fetch("/api/auth/user");
         if (userResponse.ok) {
-          // User has a session but no token in localStorage - redirect to sign-in
           router.push("/auth/sign-in");
           return;
         }
       } catch {
         // API call failed, continue to redirect
       }
-      // No session either - redirect to sign-in
       router.push("/auth/sign-in");
       return;
     }
@@ -39,32 +42,40 @@ export function SpritesList({ org }: { org: string }) {
 
       if (!response.ok) {
         if (response.status === 401) {
-          // Token is invalid, redirect to sign-in
           router.push("/auth/sign-in");
           return;
         }
         throw new Error("Failed to load sprites");
       }
 
-      const data = await response.json();
-      const spritesData = Array.isArray(data) ? data : data?.sprites;
-      if (!Array.isArray(spritesData)) {
+      const data: unknown = await response.json();
+      const spritesPayload =
+        Array.isArray(data) ? data : (data as { sprites?: unknown })?.sprites;
+      if (!Array.isArray(spritesPayload)) {
         throw new Error("Invalid sprites payload");
       }
-      setSprites(spritesData);
+
+      setSprites(
+        spritesPayload.filter(
+          (sprite): sprite is SpriteSummary =>
+            typeof sprite === "object" &&
+            sprite !== null &&
+            typeof (sprite as SpriteSummary).name === "string" &&
+            typeof (sprite as SpriteSummary).status === "string"
+        )
+      );
       setLoading(false);
     } catch (err) {
-      // Only set error if we're not redirecting
       if (err instanceof Error && !err.message.includes("redirect")) {
         setError(err.message);
       }
       setLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     fetchSprites();
-  }, [router]);
+  }, [fetchSprites]);
 
   if (loading) {
     return (
@@ -109,7 +120,7 @@ export function SpritesList({ org }: { org: string }) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sprites.map((sprite: any) => (
+          {sprites.map((sprite) => (
             <Link
               key={sprite.name}
               href={`/app/sprites/${sprite.name}`}

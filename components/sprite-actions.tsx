@@ -14,13 +14,16 @@ export function SpriteActions({ spriteName, checkpoints }: SpriteActionsProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleAction = async (action: string, data?: any) => {
+  const handleAction = async (
+    action: "init" | "checkpoint" | "restore",
+    data?: Record<string, unknown>
+  ) => {
     setLoading(action);
     setError(null);
 
     try {
       let endpoint = "";
-      let method = "POST";
+      const method = "POST";
 
       switch (action) {
         case "init":
@@ -29,9 +32,14 @@ export function SpriteActions({ spriteName, checkpoints }: SpriteActionsProps) {
         case "checkpoint":
           endpoint = `/api/sprites/${spriteName}/checkpoints`;
           break;
-        case "restore":
-          endpoint = `/api/sprites/${spriteName}/checkpoints/${data.checkpointId}/restore`;
+        case "restore": {
+          const checkpointId = data?.checkpointId;
+          if (typeof checkpointId !== "string" || !checkpointId) {
+            throw new Error("Checkpoint ID is required");
+          }
+          endpoint = `/api/sprites/${spriteName}/checkpoints/${checkpointId}/restore`;
           break;
+        }
         default:
           return;
       }
@@ -72,9 +80,9 @@ export function SpriteActions({ spriteName, checkpoints }: SpriteActionsProps) {
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => router.push(`/app/sprites/${spriteName}/terminal`)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-zinc-600 text-white rounded-lg hover:bg-zinc-700"
         >
-          Open Terminal
+          Open Browser Terminal
         </button>
         <button
           onClick={() => handleAction("init", { clone_repo: true })}

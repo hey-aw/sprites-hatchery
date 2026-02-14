@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { getAuthUserFromHeaders } from "@/lib/auth/server";
 import { SpriteDetail } from "./sprite-detail";
 

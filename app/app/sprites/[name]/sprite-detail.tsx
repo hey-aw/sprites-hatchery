@@ -5,9 +5,66 @@ import { useEffect, useState } from "react";
 import { getStoredToken } from "@/lib/auth/client";
 import { SpriteActions } from "@/components/sprite-actions";
 
+
+interface SpriteDetailData {
+  name: string;
+  status: string;
+}
+
+interface SpriteCheckpoint {
+  id: string;
+  create_time: string;
+  comment?: string;
+}
+interface SshInfo {
+  available: boolean;
+  host?: string;
+  username?: string;
+  port?: number;
+  message?: string;
+}
+
+function CopyableCommand({
+  label,
+  command,
+}: {
+  label: string;
+  command: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(command);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  return (
+    <div>
+      <p className="text-sm font-medium mb-2">{label}</p>
+      <div className="flex gap-2 items-center">
+        <code className="block flex-1 p-3 bg-zinc-100 dark:bg-zinc-800 rounded text-sm overflow-x-auto">
+          {command}
+        </code>
+        <button
+          onClick={copy}
+          className="px-3 py-2 text-sm rounded border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+        >
+          {copied ? "Copied" : "Copy"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function SpriteDetail({ spriteName }: { spriteName: string }) {
-  const [sprite, setSprite] = useState<any>(null);
-  const [checkpoints, setCheckpoints] = useState<any[]>([]);
+  const [sprite, setSprite] = useState<SpriteDetailData | null>(null);
+  const [checkpoints, setCheckpoints] = useState<SpriteCheckpoint[]>([]);
+  const [sshInfo, setSshInfo] = useState<SshInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +78,6 @@ export function SpriteDetail({ spriteName }: { spriteName: string }) {
       }
 
       try {
-        // Fetch sprite
         const spriteResponse = await fetch(`/api/sprites/${spriteName}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,7 +97,21 @@ export function SpriteDetail({ spriteName }: { spriteName: string }) {
         const spriteData = await spriteResponse.json();
         setSprite(spriteData);
 
-        // Fetch checkpoints
+        try {
+          const sshResponse = await fetch(`/api/sprites/${spriteName}/ssh`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (sshResponse.ok) {
+            const sshData = await sshResponse.json();
+            setSshInfo(sshData);
+          }
+        } catch (err) {
+          console.error("Failed to load SSH info:", err);
+        }
+
         try {
           const checkpointsResponse = await fetch(
             `/api/sprites/${spriteName}/checkpoints`,
@@ -57,7 +127,6 @@ export function SpriteDetail({ spriteName }: { spriteName: string }) {
             setCheckpoints(checkpointsData);
           }
         } catch (err) {
-          // Checkpoints might fail, but we can still show the sprite
           console.error("Failed to load checkpoints:", err);
         }
       } catch (err) {
@@ -92,6 +161,12 @@ export function SpriteDetail({ spriteName }: { spriteName: string }) {
     );
   }
 
+  const hasSsh =
+    sshInfo?.available && sshInfo.host && sshInfo.username && sshInfo.port;
+  const sshCommand = hasSsh
+    ? `ssh ${sshInfo.username}@${sshInfo.host} -p ${sshInfo.port}`
+    : null;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -124,6 +199,35 @@ export function SpriteDetail({ spriteName }: { spriteName: string }) {
 
       <div className="space-y-6">
         <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
+          <h2 className="text-xl font-semibold mb-2">SSH from Terminal app</h2>
+          {sshCommand ? (
+            <div className="space-y-4">
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Prefer native SSH for the best keyboard and keychain integration.
+              </p>
+              <CopyableCommand label="macOS Terminal" command={sshCommand} />
+              <div className="space-y-2">
+                <CopyableCommand
+                  label="iOS Prompt"
+                  command={sshCommand}
+                />
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  In Prompt, add your private key under Keys first, then create a
+                  host entry with this same hostname, username, and port.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded">
+              <p className="text-sm text-amber-800 dark:text-amber-200">
+                {sshInfo?.message ||
+                  "SSH details are unavailable. Initialize sprite first, then refresh."}
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
           <h2 className="text-xl font-semibold mb-4">Actions</h2>
           <SpriteActions spriteName={spriteName} checkpoints={checkpoints} />
         </div>
@@ -132,7 +236,7 @@ export function SpriteDetail({ spriteName }: { spriteName: string }) {
           <div className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-6">
             <h2 className="text-xl font-semibold mb-4">Checkpoints</h2>
             <div className="space-y-2">
-              {checkpoints.map((cp: any) => (
+              {checkpoints.map((cp) => (
                 <div
                   key={cp.id}
                   className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-800 rounded"

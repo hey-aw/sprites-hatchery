@@ -14,6 +14,102 @@ interface Checkpoint {
   comment?: string;
 }
 
+
+export interface SpriteSshConnection {
+  host: string;
+  username: string;
+  port: number;
+}
+
+function toRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function asNonEmptyString(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
+function asPort(value: unknown): number | null {
+  if (typeof value === "number" && Number.isInteger(value) && value > 0) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const parsed = Number.parseInt(value, 10);
+    if (Number.isInteger(parsed) && parsed > 0) {
+      return parsed;
+    }
+  }
+
+  return null;
+}
+
+export function extractSpriteSshConnection(sprite: unknown): SpriteSshConnection | null {
+  const record = toRecord(sprite);
+  if (!record) {
+    return null;
+  }
+
+  const candidates: Record<string, unknown>[] = [record];
+  const metadata = toRecord(record.metadata);
+  const ssh = toRecord(record.ssh);
+  const connection = toRecord(record.connection);
+
+  if (metadata) {
+    candidates.push(metadata);
+
+    const metadataSsh = toRecord(metadata.ssh);
+    if (metadataSsh) {
+      candidates.push(metadataSsh);
+    }
+  }
+
+  if (ssh) {
+    candidates.push(ssh);
+  }
+
+  if (connection) {
+    candidates.push(connection);
+
+    const connectionSsh = toRecord(connection.ssh);
+    if (connectionSsh) {
+      candidates.push(connectionSsh);
+    }
+  }
+
+  for (const candidate of candidates) {
+    const host =
+      asNonEmptyString(candidate.ssh_host) ??
+      asNonEmptyString(candidate.ssh_hostname) ??
+      asNonEmptyString(candidate.hostname) ??
+      asNonEmptyString(candidate.host);
+
+    const username =
+      asNonEmptyString(candidate.ssh_user) ??
+      asNonEmptyString(candidate.username) ??
+      asNonEmptyString(candidate.user);
+
+    const port =
+      asPort(candidate.ssh_port) ??
+      asPort(candidate.port);
+
+    if (host && username && port) {
+      return { host, username, port };
+    }
+  }
+
+  return null;
+}
+
 interface ExecResponse {
   stdout: string;
   stderr: string;
