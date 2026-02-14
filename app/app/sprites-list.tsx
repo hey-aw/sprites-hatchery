@@ -10,6 +10,11 @@ export function SpritesList({ org }: { org: string }) {
   const [sprites, setSprites] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [createName, setCreateName] = useState("");
+  const [createUrlAuth, setCreateUrlAuth] = useState<"sprite" | "public">("sprite");
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createSuccess, setCreateSuccess] = useState<string | null>(null);
 
   const fetchSprites = async () => {
     const token = getStoredToken();
@@ -66,6 +71,61 @@ export function SpritesList({ org }: { org: string }) {
     fetchSprites();
   }, [router]);
 
+  const handleCreateSprite = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setCreateLoading(true);
+    setCreateError(null);
+    setCreateSuccess(null);
+
+    const token = getStoredToken();
+    if (!token) {
+      router.push("/auth/sign-in");
+      setCreateLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/sprites", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: createName,
+          url_auth: createUrlAuth,
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push("/auth/sign-in");
+          return;
+        }
+        throw new Error(payload?.error || "Failed to create sprite");
+      }
+
+      const sprite = payload;
+      if (sprite?.name) {
+        setSprites((prev) => {
+          const withoutDuplicate = prev.filter((existing) => existing.name !== sprite.name);
+          return [sprite, ...withoutDuplicate];
+        });
+      }
+
+      const createdName = sprite?.name || createName;
+      setCreateSuccess(`Created ${createdName}. Redirecting...`);
+      router.refresh();
+      router.push(`/app/sprites/${createdName}`);
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : "Failed to create sprite");
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -99,6 +159,70 @@ export function SpritesList({ org }: { org: string }) {
         >
           Deploy Sprite Hatchery
         </Link>
+      </div>
+
+      <div className="mb-8 p-6 bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800">
+        <h2 className="text-xl font-semibold mb-4">Create Sprite</h2>
+        <form onSubmit={handleCreateSprite} className="space-y-4">
+          <div>
+            <label htmlFor="create-sprite-name" className="block text-sm font-medium mb-2">
+              Sprite Name
+            </label>
+            <input
+              id="create-sprite-name"
+              type="text"
+              value={createName}
+              onChange={(e) => setCreateName(e.target.value)}
+              placeholder="my-sprite"
+              pattern="[a-z0-9-]+"
+              className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              disabled={createLoading}
+              spellCheck={false}
+            />
+            <p className="text-xs text-zinc-500 mt-1">
+              Lowercase letters, numbers, and hyphens only
+            </p>
+          </div>
+
+          <div>
+            <label htmlFor="create-url-auth" className="block text-sm font-medium mb-2">
+              URL Auth (optional)
+            </label>
+            <select
+              id="create-url-auth"
+              value={createUrlAuth}
+              onChange={(e) => setCreateUrlAuth(e.target.value as "sprite" | "public")}
+              disabled={createLoading}
+              className="w-full px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="sprite">sprite</option>
+              <option value="public">public</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button
+              type="submit"
+              disabled={createLoading || !createName}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {createLoading ? "Creating..." : "Create Sprite"}
+            </button>
+          </div>
+        </form>
+
+        {createError && (
+          <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
+            {createError}
+          </div>
+        )}
+
+        {createSuccess && (
+          <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-sm text-green-700 dark:text-green-300">
+            {createSuccess}
+          </div>
+        )}
       </div>
 
       {sprites.length === 0 ? (
