@@ -41,11 +41,32 @@ export function Terminal({ spriteName, onClose }: TerminalProps) {
         throw new Error("Not authenticated - please sign in");
       }
 
-      // Connect via our proxy endpoint with token
+      const sessionResponse = await fetch("/api/console/session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sprite: spriteName }),
+      });
+
+      if (!sessionResponse.ok) {
+        const body = (await sessionResponse.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        throw new Error(body.error || "Failed to create terminal session");
+      }
+
+      const sessionBody = (await sessionResponse.json()) as { token: string };
+      if (!sessionBody.token) {
+        throw new Error("Missing terminal session token");
+      }
+
+      // Connect via our proxy endpoint with a short-lived terminal session token
       const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
       const host = window.location.hostname;
       const port = process.env.NEXT_PUBLIC_WS_PROXY_PORT || "3001";
-      const wsUrl = `${protocol}//${host}:${port}?sprite=${encodeURIComponent(spriteName)}&cols=${cols}&rows=${rows}&token=${encodeURIComponent(token)}`;
+      const wsUrl = `${protocol}//${host}:${port}?sprite=${encodeURIComponent(spriteName)}&cols=${cols}&rows=${rows}&session=${encodeURIComponent(sessionBody.token)}`;
       const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
